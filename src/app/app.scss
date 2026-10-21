@@ -1,0 +1,108 @@
+:host {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: calc(env(safe-area-inset-top, 0px) + 1.5rem)
+    calc(env(safe-area-inset-right, 0px) + 1.5rem) calc(env(safe-area-inset-bottom, 0px) + 1.5rem)
+    calc(env(safe-area-inset-left, 0px) + 1.5rem);
+  overflow: hidden;
+  box-sizing: border-box;
+  background:
+    radial-gradient(120% 85% at 50% 8%, rgba(158, 73, 244, 0.55) 0%, rgba(158, 73, 244, 0) 60%),
+    radial-gradient(90% 65% at 88% 96%, rgba(247, 37, 133, 0.4) 0%, rgba(247, 37, 133, 0) 55%),
+    linear-gradient(165deg, #6b21a8 0%, #4c1d95 45%, #2e1065 100%);
+}
+
+/* ---------------------------------------------------------------- *
+ *  Fondo con corazones flotantes
+ * ---------------------------------------------------------------- */
+.sparkles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.sparkle {
+  position: absolute;
+  bottom: -10vh;
+  color: #ffd6e8;
+  line-height: 1;
+  user-select: none;
+  will-change: transform;
+  animation-name: float-up;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+@keyframes float-up {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  100% {
+    transform: translate3d(0, -115vh, 0) rotate(360deg);
+  }
+}
+
+/* ---------------------------------------------------------------- *
+ *  Corazón
+ * ---------------------------------------------------------------- */
+.heart {
+  position: relative;
+  width: min(78vw, 22rem);
+  aspect-ratio: 1 / 1;
+  transform-origin: 50% 52%;
+  animation: heartbeat 2.6s ease-in-out infinite;
+  will-change: transform;
+}
+
+.heart__shape {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 14px 28px rgba(28, 4, 60, 0.55));
+}
+
+.heart__text {
+  position: absolute;
+  left: 50%;
+  top: 40%;
+  transform: translate(-50%, -50%);
+  color: #fff;
+  font-size: clamp(1.5rem, 10.5vw, 3rem);
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  white-space: nowrap;
+  text-shadow: 0 2px 12px rgba(93, 5, 63, 0.55);
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+@keyframes heartbeat {
+  0%,
+  28%,
+  56%,
+  100% {
+    transform: scale(1);
+  }
+  14% {
+    transform: scale(1.09);
+  }
+  42% {
+    transform: scale(1.06);
+  }
+}
+
+/* ---------------------------------------------------------------- *
+ *  Accesibilidad: respeta "reducir movimiento"
+ * ---------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .heart,
+  .sparkle {
+    animation: none;
+  }
+}
