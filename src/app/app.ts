@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { track } from '@vercel/analytics';
 
 interface Sparkle {
   left: number;
@@ -25,4 +26,9 @@ export class App {
     { left: 74, size: 0.95, delay: 7.2, duration: 16, opacity: 0.34 },
     { left: 89, size: 1.2, delay: 4.3, duration: 14, opacity: 0.44 },
   ];
+
+  /** Registra un evento personalizado cuando tocan el corazón. */
+  protected onHeartTap(): void {
+    track('heart_tap');
+  }
 }

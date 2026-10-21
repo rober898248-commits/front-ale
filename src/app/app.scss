@@ -51,11 +51,31 @@
  * ---------------------------------------------------------------- */
 .heart {
   position: relative;
+  display: block;
   width: min(78vw, 22rem);
   aspect-ratio: 1 / 1;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
   transform-origin: 50% 52%;
   animation: heartbeat 2.6s ease-in-out infinite;
   will-change: transform;
+  /* Evita el retardo de 300ms del tap en iOS y el flash del highlight */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.heart:active {
+  scale: 0.96;
+}
+
+.heart:focus-visible {
+  outline: 3px solid rgba(255, 255, 255, 0.8);
+  outline-offset: 6px;
+  border-radius: 14px;
 }
 
 .heart__shape {

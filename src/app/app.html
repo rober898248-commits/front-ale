@@ -13,7 +13,7 @@
     }
   </div>
 
-  <div class="heart" role="img" aria-label="Te amo">
+  <button class="heart" type="button" (click)="onHeartTap()" aria-label="Te amo">
     <svg class="heart__shape" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
       <defs>
         <linearGradient id="heartFill" x1="0" y1="0" x2="0" y2="1">
@@ -28,6 +28,6 @@
       />
     </svg>
 
-    <span class="heart__text">te amo</span>
-  </div>
+    <span class="heart__text" aria-hidden="true">te amo</span>
+  </button>
 </div>
