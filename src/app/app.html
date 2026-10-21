@@ -1,43 +1,106 @@
-<div class="stage">
-  <div class="sparkles" aria-hidden="true">
-    @for (spark of sparkles; track spark.left + spark.delay) {
-      <span
-        class="sparkle"
-        [style.left]="spark.left + '%'"
-        [style.font-size]="spark.size + 'rem'"
-        [style.opacity]="spark.opacity"
-        [style.animation-delay]="spark.delay + 's'"
-        [style.animation-duration]="spark.duration + 's'"
-        >♥</span
-      >
-    }
+<main class="content">
+  <div class="stage">
+    <div class="sparkles" aria-hidden="true">
+      @for (spark of sparkles; track spark.left + spark.delay) {
+        <span
+          class="sparkle"
+          [style.left]="spark.left + '%'"
+          [style.font-size]="spark.size + 'rem'"
+          [style.opacity]="spark.opacity"
+          [style.animation-delay]="spark.delay + 's'"
+          [style.animation-duration]="spark.duration + 's'"
+          >♥</span
+        >
+      }
+    </div>
+
+    <button #heart class="heart" type="button" (click)="onHeartTap()" aria-label="Te amo">
+      <svg class="heart__shape" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+        <defs>
+          <linearGradient id="heartFill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#ff85b3" />
+            <stop offset="45%" stop-color="#f72585" />
+            <stop offset="100%" stop-color="#b5179e" />
+          </linearGradient>
+        </defs>
+        <path
+          d="M50 89.5C50 89.5 4 61.5 4 33.5C4 16 15.7 5 29.5 5C38.2 5 45.6 10.2 50 17.8C54.4 10.2 61.8 5 70.5 5C84.3 5 96 16 96 33.5C96 61.5 50 89.5 50 89.5Z"
+          fill="url(#heartFill)"
+        />
+      </svg>
+
+      <span class="heart__text" aria-hidden="true">te amo</span>
+    </button>
   </div>
 
-  <button class="heart" type="button" (click)="onHeartTap()" aria-label="Te amo">
-    <svg class="heart__shape" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
-      <defs>
-        <linearGradient id="heartFill" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#ff85b3" />
-          <stop offset="45%" stop-color="#f72585" />
-          <stop offset="100%" stop-color="#b5179e" />
-        </linearGradient>
-      </defs>
-      <path
-        d="M50 89.5C50 89.5 4 61.5 4 33.5C4 16 15.7 5 29.5 5C38.2 5 45.6 10.2 50 17.8C54.4 10.2 61.8 5 70.5 5C84.3 5 96 16 96 33.5C96 61.5 50 89.5 50 89.5Z"
-        fill="url(#heartFill)"
-      />
-    </svg>
+  <section class="carousel" aria-label="Nuestros recuerdos">
+    <div
+      class="carousel__viewport"
+      (pointerdown)="onSwipeStart($event)"
+      (pointerup)="onSwipeEnd($event)"
+      (pointercancel)="onSwipeCancel()"
+    >
+      <ul class="carousel__track" [style.transform]="'translateX(' + -photoIndex() * 100 + '%)'">
+        @for (photo of photos; track photo.src; let i = $index) {
+          <li
+            class="carousel__slide"
+            [attr.aria-hidden]="i === photoIndex() ? null : 'true'"
+            [attr.aria-roledescription]="'diapositiva ' + (i + 1) + ' de ' + photos.length"
+          >
+            <img
+              class="carousel__image"
+              [src]="photo.src"
+              [alt]="photo.alt"
+              draggable="false"
+              decoding="async"
+            />
+          </li>
+        }
+      </ul>
 
-    <span class="heart__text" aria-hidden="true">Te amo</span>
-  </button>
-</div>
+      @if (photos.length > 1) {
+        <button
+          class="carousel__nav carousel__nav--prev"
+          type="button"
+          (click)="previousPhoto()"
+          aria-label="Foto anterior"
+        >
+          <span aria-hidden="true">‹</span>
+        </button>
+        <button
+          class="carousel__nav carousel__nav--next"
+          type="button"
+          (click)="nextPhoto()"
+          aria-label="Foto siguiente"
+        >
+          <span aria-hidden="true">›</span>
+        </button>
+      }
+    </div>
+
+    @if (photos.length > 1) {
+      <div class="carousel__dots">
+        @for (photo of photos; track photo.src; let i = $index) {
+          <button
+            class="carousel__dot"
+            type="button"
+            [class.carousel__dot--active]="i === photoIndex()"
+            [attr.aria-label]="'Ver foto ' + (i + 1)"
+            [attr.aria-current]="i === photoIndex() ? 'true' : null"
+            (click)="goToPhoto(i)"
+          ></button>
+        }
+      </div>
+    }
+  </section>
+</main>
 
 <div class="missings" aria-hidden="true">
   @for (message of messages(); track message.id) {
     <span
       class="missing"
-      [style.--dx]="message.dx"
-      [style.--dy]="message.dy"
+      [style.--x]="message.x + 'px'"
+      [style.--y]="message.y + 'px'"
       [style.--rotation]="message.rotation + 'deg'"
       [style.--duration]="duration + 'ms'"
     >

@@ -80,8 +80,8 @@ describe('App', () => {
       const messages = (fixture.nativeElement as HTMLElement).querySelectorAll('.missing');
       expect(messages.length).toBe(3);
 
-      const positions = Array.from(messages).map((message) =>
-        message.getAttribute('style')?.match(/--dx:\s*([^;]+)/)?.[1],
+      const positions = Array.from(messages).map(
+        (message) => message.getAttribute('style')?.match(/--x:\s*([^;]+)/)?.[1],
       );
       expect(new Set(positions).size).toBeGreaterThan(1);
 
@@ -92,6 +92,51 @@ describe('App', () => {
     } finally {
       vi.useRealTimers();
     }
+  });
+
+  it('should render the carousel with one image per column', async () => {
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+    const compiled = fixture.nativeElement as HTMLElement;
+
+    const slides = compiled.querySelectorAll('.carousel__slide');
+    expect(slides.length).toBe(2);
+
+    slides.forEach((slide) => {
+      expect(slide.querySelectorAll('img').length).toBe(1);
+    });
+
+    const images = Array.from(compiled.querySelectorAll('img')).map((image) =>
+      image.getAttribute('src'),
+    );
+    expect(images).toEqual(['img/boda1.png', 'img/boda2-removebg-preview.png']);
+  });
+
+  it('should move the carousel one photo at a time', async () => {
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+    const compiled = fixture.nativeElement as HTMLElement;
+
+    const next = compiled.querySelector('.carousel__nav--next') as HTMLButtonElement;
+    const previous = compiled.querySelector('.carousel__nav--prev') as HTMLButtonElement;
+    const track = compiled.querySelector('.carousel__track') as HTMLElement;
+
+    expect(track.getAttribute('style')).toContain('translateX(0%)');
+
+    next.click();
+    fixture.detectChanges();
+    expect(track.getAttribute('style')).toContain('translateX(-100%)');
+    expect(compiled.querySelectorAll('.carousel__dot')[1].getAttribute('aria-current')).toBe(
+      'true',
+    );
+
+    next.click();
+    fixture.detectChanges();
+    expect(track.getAttribute('style')).toContain('translateX(0%)');
+
+    previous.click();
+    fixture.detectChanges();
+    expect(track.getAttribute('style')).toContain('translateX(-100%)');
   });
 });
 

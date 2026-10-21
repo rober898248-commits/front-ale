@@ -17,6 +17,18 @@
 }
 
 /* ---------------------------------------------------------------- *
+ *  Contenido: corazón + carrusel
+ * ---------------------------------------------------------------- */
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.9rem, 2.5vh, 1.6rem);
+  width: 100%;
+}
+
+/* ---------------------------------------------------------------- *
  *  Escenario
  * ---------------------------------------------------------------- */
 .stage {
@@ -60,7 +72,8 @@
 .heart {
   position: relative;
   display: block;
-  width: min(78vw, 22rem);
+  /* Se limita también por alto para dejar sitio al carrusel */
+  width: min(68vw, 20rem, 40vh);
   aspect-ratio: 1 / 1;
   padding: 0;
   border: 0;
@@ -126,28 +139,144 @@
 }
 
 /* ---------------------------------------------------------------- *
+ *  Carrusel de fotos (una imagen por columna)
+ * ---------------------------------------------------------------- */
+.carousel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7rem;
+  width: min(72vw, 20rem, 48vh);
+}
+
+.carousel__viewport {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 22px;
+  background:
+    radial-gradient(120% 100% at 50% 0%, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 70%),
+    rgba(255, 255, 255, 0.08);
+  box-shadow: 0 18px 40px rgba(20, 2, 45, 0.45);
+  overflow: hidden;
+  touch-action: pan-y;
+}
+
+.carousel__track {
+  display: flex;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  transition: transform 0.45s cubic-bezier(0.22, 0.61, 0.36, 1);
+  will-change: transform;
+}
+
+.carousel__slide {
+  flex: 0 0 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 0.8rem;
+}
+
+.carousel__image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  -webkit-user-drag: none;
+  user-select: none;
+  filter: drop-shadow(0 10px 20px rgba(20, 2, 45, 0.35));
+}
+
+.carousel__nav {
+  position: absolute;
+  top: 50%;
+  display: grid;
+  place-items: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 50%;
+  background: rgba(46, 16, 101, 0.55);
+  color: #fff;
+  font-size: 1.35rem;
+  line-height: 1;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  transform: translateY(-50%);
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.carousel__nav:hover {
+  background: rgba(46, 16, 101, 0.8);
+}
+
+.carousel__nav:active {
+  transform: translateY(-50%) scale(0.92);
+}
+
+.carousel__nav:focus-visible {
+  outline: 3px solid rgba(255, 255, 255, 0.8);
+  outline-offset: 3px;
+}
+
+.carousel__nav--prev {
+  left: 0.5rem;
+}
+
+.carousel__nav--next {
+  right: 0.5rem;
+}
+
+.carousel__dots {
+  display: flex;
+  gap: 0.45rem;
+}
+
+.carousel__dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.35);
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.carousel__dot--active {
+  background: #ff85b3;
+  transform: scale(1.2);
+}
+
+.carousel__dot:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.8);
+  outline-offset: 2px;
+}
+
+/* ---------------------------------------------------------------- *
  *  Mensajes "Te extraño" flotando alrededor del corazón
  * ---------------------------------------------------------------- */
 .missings {
-  position: absolute;
+  position: fixed;
   inset: 0;
+  z-index: 10;
   pointer-events: none;
   overflow: hidden;
 }
 
 .missing {
   position: absolute;
-  /* El corazón mide min(78vw, 22rem): su mitad es min(39vw, 11rem) */
-  left: clamp(
-    4.8rem,
-    calc(50% + var(--dx, 0) * min(39vw, 11rem)),
-    calc(100% - 4.8rem)
-  );
-  top: clamp(
-    1.6rem,
-    calc(50% + var(--dy, 0) * min(39vw, 11rem)),
-    calc(100% - 1.6rem)
-  );
+  left: clamp(5rem, var(--x, 50%), calc(100% - 5rem));
+  top: clamp(2rem, var(--y, 50%), calc(100% - 2rem));
   display: block;
   opacity: 1;
   animation: missing-life var(--duration, 3000ms) ease forwards;
@@ -206,6 +335,23 @@
 }
 
 /* ---------------------------------------------------------------- *
+ *  Pantallas de poca altura: todo más compacto
+ * ---------------------------------------------------------------- */
+@media (max-height: 620px) {
+  .content {
+    gap: 0.6rem;
+  }
+
+  .heart {
+    width: min(60vw, 18rem, 34vh);
+  }
+
+  .carousel {
+    width: min(60vw, 16rem, 40vh);
+  }
+}
+
+/* ---------------------------------------------------------------- *
  *  Accesibilidad: respeta "reducir movimiento"
  * ---------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
@@ -216,5 +362,9 @@
 
   .missing {
     animation: none;
+  }
+
+  .carousel__track {
+    transition: none;
   }
 }
