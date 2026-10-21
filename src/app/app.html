@@ -28,6 +28,26 @@
       />
     </svg>
 
-    <span class="heart__text" aria-hidden="true">te amo</span>
+    <span class="heart__text" aria-hidden="true">Te amo</span>
   </button>
 </div>
+
+<div class="missings" aria-hidden="true">
+  @for (message of messages(); track message.id) {
+    <span
+      class="missing"
+      [style.--dx]="message.dx"
+      [style.--dy]="message.dy"
+      [style.--rotation]="message.rotation + 'deg'"
+      [style.--duration]="duration + 'ms'"
+    >
+      <span class="missing__text">Te extraño</span>
+    </span>
+  }
+</div>
+
+<span class="sr-only" role="status" aria-live="polite">
+  @if (messages().length > 0) {
+    Te extraño
+  }
+</span>

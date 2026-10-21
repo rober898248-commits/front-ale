@@ -41,6 +41,58 @@ describe('App', () => {
 
     expect(vi.mocked(track)).toHaveBeenCalledWith('heart_tap');
   });
+
+  it('should show the "Te extraño" message on tap and hide it after 3 seconds', async () => {
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+    const button = fixture.nativeElement.querySelector('.heart') as HTMLButtonElement;
+
+    vi.useFakeTimers();
+    try {
+      button.click();
+      fixture.detectChanges();
+
+      const messages = fixture.nativeElement.querySelectorAll('.missing');
+      expect(messages.length).toBe(1);
+      expect(messages[0].textContent).toContain('Te extraño');
+
+      vi.advanceTimersByTime(3000);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.querySelectorAll('.missing').length).toBe(0);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('should stack a new message with a random position on every tap', async () => {
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+    const button = fixture.nativeElement.querySelector('.heart') as HTMLButtonElement;
+
+    vi.useFakeTimers();
+    try {
+      button.click();
+      button.click();
+      button.click();
+      fixture.detectChanges();
+
+      const messages = (fixture.nativeElement as HTMLElement).querySelectorAll('.missing');
+      expect(messages.length).toBe(3);
+
+      const positions = Array.from(messages).map((message) =>
+        message.getAttribute('style')?.match(/--dx:\s*([^;]+)/)?.[1],
+      );
+      expect(new Set(positions).size).toBeGreaterThan(1);
+
+      vi.advanceTimersByTime(3000);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.querySelectorAll('.missing').length).toBe(0);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
 });
 
 describe('initAnalytics', () => {

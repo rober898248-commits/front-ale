@@ -1,4 +1,5 @@
 :host {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -16,10 +17,17 @@
 }
 
 /* ---------------------------------------------------------------- *
+ *  Escenario
+ * ---------------------------------------------------------------- */
+.stage {
+  position: relative;
+}
+
+/* ---------------------------------------------------------------- *
  *  Fondo con corazones flotantes
  * ---------------------------------------------------------------- */
 .sparkles {
-  position: absolute;
+  position: fixed;
   inset: 0;
   pointer-events: none;
   overflow: hidden;
@@ -118,11 +126,95 @@
 }
 
 /* ---------------------------------------------------------------- *
+ *  Mensajes "Te extraño" flotando alrededor del corazón
+ * ---------------------------------------------------------------- */
+.missings {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.missing {
+  position: absolute;
+  /* El corazón mide min(78vw, 22rem): su mitad es min(39vw, 11rem) */
+  left: clamp(
+    4.8rem,
+    calc(50% + var(--dx, 0) * min(39vw, 11rem)),
+    calc(100% - 4.8rem)
+  );
+  top: clamp(
+    1.6rem,
+    calc(50% + var(--dy, 0) * min(39vw, 11rem)),
+    calc(100% - 1.6rem)
+  );
+  display: block;
+  opacity: 1;
+  animation: missing-life var(--duration, 3000ms) ease forwards;
+}
+
+.missing__text {
+  display: inline-block;
+  padding: 0.6rem 1.4rem;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(255, 133, 179, 0.95), rgba(247, 37, 133, 0.95));
+  box-shadow: 0 12px 30px rgba(28, 4, 60, 0.45);
+  color: #fff;
+  font-size: clamp(1.05rem, 5vw, 1.6rem);
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+  white-space: nowrap;
+  text-shadow: 0 2px 10px rgba(93, 5, 63, 0.5);
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+@keyframes missing-life {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(var(--rotation, 0deg)) scale(0.72);
+  }
+  12% {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(var(--rotation, 0deg)) scale(1);
+  }
+  78% {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(var(--rotation, 0deg)) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(var(--rotation, 0deg)) scale(0.92);
+  }
+}
+
+/* ---------------------------------------------------------------- *
+ *  Utilidad: solo para lectores de pantalla
+ * ---------------------------------------------------------------- */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------------------------------------------------------------- *
  *  Accesibilidad: respeta "reducir movimiento"
  * ---------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
   .heart,
   .sparkle {
+    animation: none;
+  }
+
+  .missing {
     animation: none;
   }
 }
