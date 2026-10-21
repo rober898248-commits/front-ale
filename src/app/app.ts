@@ -9,7 +9,7 @@ interface Sparkle {
   opacity: number;
 }
 
-/** Foto del carrusel. */
+/** Foto que acompaña a los mensajes. */
 interface Photo {
   src: string;
   alt: string;
@@ -18,10 +18,7 @@ interface Photo {
 /** Milisegundos que cada mensaje "Te extraño" permanece visible. */
 const MISSING_MESSAGE_DURATION = 3000;
 
-/** Distancia mínima (px) para considerar un gesto como deslizamiento. */
-const SWIPE_THRESHOLD = 40;
-
-/** Un mensaje "Te extraño" flotando alrededor del corazón. */
+/** Un mensaje "Te extraño" con una foto, flotando alrededor del corazón. */
 interface MissingMessage {
   id: number;
   /** Posición horizontal en píxeles (respecto a la ventana). */
@@ -30,6 +27,8 @@ interface MissingMessage {
   y: number;
   /** Rotación aleatoria, en grados. */
   rotation: number;
+  /** Foto aleatoria de la carpeta `img`. */
+  photo: Photo;
 }
 
 @Component({
@@ -55,7 +54,7 @@ export class App {
     { left: 89, size: 1.2, delay: 4.3, duration: 14, opacity: 0.44 },
   ];
 
-  /** Fotos del carrusel (una imagen por columna). */
+  /** Imágenes de la carpeta `img` que se muestran al azar. */
   protected readonly photos: Photo[] = [
     { src: 'img/boda1.png', alt: 'Ilustración de la pareja en la boda' },
     {
@@ -64,10 +63,7 @@ export class App {
     },
   ];
 
-  /** Índice de la foto visible en el carrusel. */
-  protected readonly photoIndex = signal(0);
-
-  /** Mensajes "Te extraño" visibles, cada uno en una posición aleatoria. */
+  /** Mensajes "Te extraño" visibles, cada uno con foto y posición aleatorias. */
   protected readonly messages = signal<MissingMessage[]>([]);
 
   /** Duración de cada mensaje (compartida con la animación CSS). */
@@ -76,24 +72,24 @@ export class App {
   /** Identificador incremental para cada mensaje creado. */
   private nextId = 0;
 
+  /** Índice de la última foto mostrada, para no repetirla seguida. */
+  private lastPhotoIndex = -1;
+
   /** Temporizadores que ocultan cada mensaje. */
   private readonly timers = new Map<number, ReturnType<typeof setTimeout>>();
-
-  /** Posición horizontal donde empezó el gesto de deslizamiento. */
-  private swipeStartX: number | null = null;
 
   constructor() {
     this.destroyRef.onDestroy(() => this.clearTimers());
   }
 
-  /** Registra un evento personalizado y muestra un mensaje "Te extraño". */
+  /** Registra un evento personalizado y muestra un mensaje "Te extraño" con foto. */
   protected onHeartTap(): void {
     track('heart_tap');
 
     const anchor = this.messageAnchor();
     const id = ++this.nextId;
     const angle = Math.random() * Math.PI * 2;
-    const distance = anchor.radius * (0.7 + Math.random() * 0.55);
+    const distance = anchor.radius * (0.8 + Math.random() * 0.6);
 
     this.messages.update((messages) => [
       ...messages,
@@ -101,7 +97,8 @@ export class App {
         id,
         x: anchor.x + Math.cos(angle) * distance * 0.9,
         y: anchor.y + Math.sin(angle) * distance,
-        rotation: (Math.random() - 0.5) * 12,
+        rotation: (Math.random() - 0.5) * 10,
+        photo: this.randomPhoto(),
       },
     ]);
 
@@ -111,50 +108,21 @@ export class App {
     );
   }
 
-  /** Muestra la foto siguiente del carrusel. */
-  protected nextPhoto(): void {
-    this.photoIndex.update((index) => (index + 1) % this.photos.length);
-  }
-
-  /** Muestra la foto anterior del carrusel. */
-  protected previousPhoto(): void {
+  /** Devuelve una foto al azar, evitando repetir la última mostrada. */
+  private randomPhoto(): Photo {
     const total = this.photos.length;
-    this.photoIndex.update((index) => (index - 1 + total) % total);
-  }
 
-  /** Muestra una foto concreta del carrusel. */
-  protected goToPhoto(index: number): void {
-    this.photoIndex.set(index);
-  }
-
-  /** Guarda el punto de partida del gesto de deslizamiento. */
-  protected onSwipeStart(event: PointerEvent): void {
-    this.swipeStartX = event.clientX;
-  }
-
-  /** Cambia de foto según la dirección del deslizamiento. */
-  protected onSwipeEnd(event: PointerEvent): void {
-    if (this.swipeStartX === null) {
-      return;
+    if (total === 1) {
+      return this.photos[0];
     }
 
-    const delta = event.clientX - this.swipeStartX;
-    this.swipeStartX = null;
-
-    if (Math.abs(delta) < SWIPE_THRESHOLD) {
-      return;
+    let index = Math.floor(Math.random() * total);
+    if (index === this.lastPhotoIndex) {
+      index = (index + 1) % total;
     }
 
-    if (delta < 0) {
-      this.nextPhoto();
-    } else {
-      this.previousPhoto();
-    }
-  }
-
-  /** Cancela el gesto de deslizamiento en curso. */
-  protected onSwipeCancel(): void {
-    this.swipeStartX = null;
+    this.lastPhotoIndex = index;
+    return this.photos[index];
   }
 
   /** Centro y radio del corazón, usados para colocar los mensajes. */

@@ -17,18 +17,6 @@
 }
 
 /* ---------------------------------------------------------------- *
- *  Contenido: corazón + carrusel
- * ---------------------------------------------------------------- */
-.content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: clamp(0.9rem, 2.5vh, 1.6rem);
-  width: 100%;
-}
-
-/* ---------------------------------------------------------------- *
  *  Escenario
  * ---------------------------------------------------------------- */
 .stage {
@@ -72,8 +60,7 @@
 .heart {
   position: relative;
   display: block;
-  /* Se limita también por alto para dejar sitio al carrusel */
-  width: min(68vw, 20rem, 40vh);
+  width: min(78vw, 22rem);
   aspect-ratio: 1 / 1;
   padding: 0;
   border: 0;
@@ -139,131 +126,7 @@
 }
 
 /* ---------------------------------------------------------------- *
- *  Carrusel de fotos (una imagen por columna)
- * ---------------------------------------------------------------- */
-.carousel {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.7rem;
-  width: min(72vw, 20rem, 48vh);
-}
-
-.carousel__viewport {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 22px;
-  background:
-    radial-gradient(120% 100% at 50% 0%, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 70%),
-    rgba(255, 255, 255, 0.08);
-  box-shadow: 0 18px 40px rgba(20, 2, 45, 0.45);
-  overflow: hidden;
-  touch-action: pan-y;
-}
-
-.carousel__track {
-  display: flex;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  transition: transform 0.45s cubic-bezier(0.22, 0.61, 0.36, 1);
-  will-change: transform;
-}
-
-.carousel__slide {
-  flex: 0 0 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  padding: 0.8rem;
-}
-
-.carousel__image {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-  -webkit-user-drag: none;
-  user-select: none;
-  filter: drop-shadow(0 10px 20px rgba(20, 2, 45, 0.35));
-}
-
-.carousel__nav {
-  position: absolute;
-  top: 50%;
-  display: grid;
-  place-items: center;
-  width: 2.1rem;
-  height: 2.1rem;
-  padding: 0;
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  border-radius: 50%;
-  background: rgba(46, 16, 101, 0.55);
-  color: #fff;
-  font-size: 1.35rem;
-  line-height: 1;
-  cursor: pointer;
-  backdrop-filter: blur(6px);
-  transform: translateY(-50%);
-  transition:
-    background-color 0.2s ease,
-    transform 0.2s ease;
-}
-
-.carousel__nav:hover {
-  background: rgba(46, 16, 101, 0.8);
-}
-
-.carousel__nav:active {
-  transform: translateY(-50%) scale(0.92);
-}
-
-.carousel__nav:focus-visible {
-  outline: 3px solid rgba(255, 255, 255, 0.8);
-  outline-offset: 3px;
-}
-
-.carousel__nav--prev {
-  left: 0.5rem;
-}
-
-.carousel__nav--next {
-  right: 0.5rem;
-}
-
-.carousel__dots {
-  display: flex;
-  gap: 0.45rem;
-}
-
-.carousel__dot {
-  width: 0.55rem;
-  height: 0.55rem;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.35);
-  cursor: pointer;
-  transition:
-    background-color 0.2s ease,
-    transform 0.2s ease;
-}
-
-.carousel__dot--active {
-  background: #ff85b3;
-  transform: scale(1.2);
-}
-
-.carousel__dot:focus-visible {
-  outline: 2px solid rgba(255, 255, 255, 0.8);
-  outline-offset: 2px;
-}
-
-/* ---------------------------------------------------------------- *
- *  Mensajes "Te extraño" flotando alrededor del corazón
+ *  Mensajes "Te extraño" con foto, flotando alrededor del corazón
  * ---------------------------------------------------------------- */
 .missings {
   position: fixed;
@@ -275,22 +138,40 @@
 
 .missing {
   position: absolute;
-  left: clamp(5rem, var(--x, 50%), calc(100% - 5rem));
-  top: clamp(2rem, var(--y, 50%), calc(100% - 2rem));
-  display: block;
+  left: clamp(7rem, var(--x, 50%), calc(100% - 7rem));
+  top: clamp(8.5rem, var(--y, 50%), calc(100% - 8.5rem));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
   opacity: 1;
   animation: missing-life var(--duration, 3000ms) ease forwards;
 }
 
+.missing__photo {
+  width: clamp(9rem, 40vw, 14rem);
+  aspect-ratio: 1 / 1;
+  padding: 0.5rem;
+  object-fit: contain;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 14px 30px rgba(20, 2, 45, 0.45);
+  backdrop-filter: blur(4px);
+  -webkit-user-drag: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
 .missing__text {
   display: inline-block;
-  padding: 0.6rem 1.4rem;
+  padding: 0.45rem 1.1rem;
   border: 1px solid rgba(255, 255, 255, 0.35);
   border-radius: 999px;
   background: linear-gradient(135deg, rgba(255, 133, 179, 0.95), rgba(247, 37, 133, 0.95));
-  box-shadow: 0 12px 30px rgba(28, 4, 60, 0.45);
+  box-shadow: 0 10px 24px rgba(28, 4, 60, 0.45);
   color: #fff;
-  font-size: clamp(1.05rem, 5vw, 1.6rem);
+  font-size: clamp(0.95rem, 4vw, 1.15rem);
   font-weight: 800;
   letter-spacing: 0.01em;
   line-height: 1.2;
@@ -335,23 +216,6 @@
 }
 
 /* ---------------------------------------------------------------- *
- *  Pantallas de poca altura: todo más compacto
- * ---------------------------------------------------------------- */
-@media (max-height: 620px) {
-  .content {
-    gap: 0.6rem;
-  }
-
-  .heart {
-    width: min(60vw, 18rem, 34vh);
-  }
-
-  .carousel {
-    width: min(60vw, 16rem, 40vh);
-  }
-}
-
-/* ---------------------------------------------------------------- *
  *  Accesibilidad: respeta "reducir movimiento"
  * ---------------------------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
@@ -362,9 +226,5 @@
 
   .missing {
     animation: none;
-  }
-
-  .carousel__track {
-    transition: none;
   }
 }

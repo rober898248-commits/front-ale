@@ -42,33 +42,40 @@ describe('App', () => {
     expect(vi.mocked(track)).toHaveBeenCalledWith('heart_tap');
   });
 
-  it('should show the "Te extraño" message on tap and hide it after 3 seconds', async () => {
+  it('should show a "Te extraño" message with a random photo and hide it after 3 seconds', async () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
     const button = fixture.nativeElement.querySelector('.heart') as HTMLButtonElement;
+    const compiled = fixture.nativeElement as HTMLElement;
 
     vi.useFakeTimers();
     try {
       button.click();
       fixture.detectChanges();
 
-      const messages = fixture.nativeElement.querySelectorAll('.missing');
+      const messages = compiled.querySelectorAll('.missing');
       expect(messages.length).toBe(1);
       expect(messages[0].textContent).toContain('Te extraño');
+
+      const photo = messages[0].querySelector('.missing__photo') as HTMLImageElement;
+      expect(['img/boda1.png', 'img/boda2-removebg-preview.png']).toContain(
+        photo.getAttribute('src'),
+      );
 
       vi.advanceTimersByTime(3000);
       fixture.detectChanges();
 
-      expect(fixture.nativeElement.querySelectorAll('.missing').length).toBe(0);
+      expect(compiled.querySelectorAll('.missing').length).toBe(0);
     } finally {
       vi.useRealTimers();
     }
   });
 
-  it('should stack a new message with a random position on every tap', async () => {
+  it('should stack a message on every tap with a random position and a different photo', async () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
     const button = fixture.nativeElement.querySelector('.heart') as HTMLButtonElement;
+    const compiled = fixture.nativeElement as HTMLElement;
 
     vi.useFakeTimers();
     try {
@@ -77,7 +84,7 @@ describe('App', () => {
       button.click();
       fixture.detectChanges();
 
-      const messages = (fixture.nativeElement as HTMLElement).querySelectorAll('.missing');
+      const messages = compiled.querySelectorAll('.missing');
       expect(messages.length).toBe(3);
 
       const positions = Array.from(messages).map(
@@ -85,58 +92,20 @@ describe('App', () => {
       );
       expect(new Set(positions).size).toBeGreaterThan(1);
 
+      const sources = Array.from(messages).map((message) =>
+        message.querySelector('.missing__photo')?.getAttribute('src'),
+      );
+      // Con dos fotos disponibles, nunca se repite la misma dos veces seguidas.
+      expect(sources[0]).not.toBe(sources[1]);
+      expect(sources[1]).not.toBe(sources[2]);
+
       vi.advanceTimersByTime(3000);
       fixture.detectChanges();
 
-      expect(fixture.nativeElement.querySelectorAll('.missing').length).toBe(0);
+      expect(compiled.querySelectorAll('.missing').length).toBe(0);
     } finally {
       vi.useRealTimers();
     }
-  });
-
-  it('should render the carousel with one image per column', async () => {
-    const fixture = TestBed.createComponent(App);
-    await fixture.whenStable();
-    const compiled = fixture.nativeElement as HTMLElement;
-
-    const slides = compiled.querySelectorAll('.carousel__slide');
-    expect(slides.length).toBe(2);
-
-    slides.forEach((slide) => {
-      expect(slide.querySelectorAll('img').length).toBe(1);
-    });
-
-    const images = Array.from(compiled.querySelectorAll('img')).map((image) =>
-      image.getAttribute('src'),
-    );
-    expect(images).toEqual(['img/boda1.png', 'img/boda2-removebg-preview.png']);
-  });
-
-  it('should move the carousel one photo at a time', async () => {
-    const fixture = TestBed.createComponent(App);
-    await fixture.whenStable();
-    const compiled = fixture.nativeElement as HTMLElement;
-
-    const next = compiled.querySelector('.carousel__nav--next') as HTMLButtonElement;
-    const previous = compiled.querySelector('.carousel__nav--prev') as HTMLButtonElement;
-    const track = compiled.querySelector('.carousel__track') as HTMLElement;
-
-    expect(track.getAttribute('style')).toContain('translateX(0%)');
-
-    next.click();
-    fixture.detectChanges();
-    expect(track.getAttribute('style')).toContain('translateX(-100%)');
-    expect(compiled.querySelectorAll('.carousel__dot')[1].getAttribute('aria-current')).toBe(
-      'true',
-    );
-
-    next.click();
-    fixture.detectChanges();
-    expect(track.getAttribute('style')).toContain('translateX(0%)');
-
-    previous.click();
-    fixture.detectChanges();
-    expect(track.getAttribute('style')).toContain('translateX(-100%)');
   });
 });
 
